@@ -65,8 +65,14 @@ describe Oystercard do
     end
 
     it "changes @in_journey to true" do
+      subject.top_up(10)
       subject.touch_in
       expect(subject.in_journey).to be true
+    end
+
+    it "checks minimum balance is above £1" do
+      @balance = 0.8
+      expect{subject.touch_in}.to raise_error "error"
     end
 
   end
@@ -78,9 +84,16 @@ describe Oystercard do
     end
 
     it "changes @in_journey to false" do
+      subject.top_up(10)
       subject.touch_in
       subject.touch_out
       expect(subject.in_journey).to be false
+    end
+
+    it "charges the customer for their journey" do
+      subject.top_up(10)
+      subject.touch_in
+      expect{subject.touch_out}.to change{subject.balance}.by(-1)
     end
 
   end
